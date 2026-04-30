@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu relación, vista con claridad — Relation Line™</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose:    #C0435A;
+    --rose-lt: #FCEEF1;
+    --rose-md: #E8A0AE;
+    --sand:    #F7F3EE;
+    --sand-dk: #E8E2D9;
+    --ink:     #1C1917;
+    --ink-mid: #6B6460;
+    --ink-lt:  #B5AFAB;
+    --white:   #FFFCFA;
+    --gold:    #B8860B;
+    --gold-lt: #FDF6E3;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--white);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GATE: nivel selector ── */
+  .gate {
+    min-height: 100vh;
+    background: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .gate::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 55% 55% at 15% 85%, rgba(192,67,90,.2) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 50% at 85% 15%, rgba(192,67,90,.12) 0%, transparent 55%);
+  }
+  .gate-inner { position: relative; max-width: 560px; }
+  .gate-label {
+    display: inline-block;
+    font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--rose-md); margin-bottom: 28px;
+    padding: 5px 14px; border: 1px solid rgba(192,67,90,.35); border-radius: 40px;
+  }
+  .gate h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(34px, 7vw, 58px);
+    line-height: 1.08; color: var(--white); margin-bottom: 18px;
+  }
+  .gate h1 em { font-style: italic; color: var(--rose-md); }
+  .gate-sub {
+    font-size: clamp(15px, 2.5vw, 18px);
+    color: rgba(255,252,250,.6); line-height: 1.65;
+    margin-bottom: 48px; font-weight: 300;
+  }
+  .gate-question {
+    font-size: 14px; letter-spacing: .06em; text-transform: uppercase;
+    color: rgba(255,252,250,.45); margin-bottom: 20px; font-weight: 500;
+  }
+  .gate-options {
+    display: flex; flex-direction: column; gap: 12px;
+    max-width: 420px; margin: 0 auto;
+  }
+  .gate-opt {
+    background: rgba(255,252,250,.06);
+    border: 1px solid rgba(255,252,250,.14);
+    border-radius: 16px;
+    padding: 18px 24px;
+    cursor: pointer;
+    text-align: left;
+    display: flex; align-items: center; gap: 16px;
+    transition: background .2s, border-color .2s, transform .15s;
+    color: var(--white);
+  }
+  .gate-opt:hover {
+    background: rgba(192,67,90,.18);
+    border-color: rgba(192,67,90,.45);
+    transform: translateX(4px);
+  }
+  .gate-opt-icon { font-size: 22px; flex-shrink: 0; }
+  .gate-opt-text strong { display: block; font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+  .gate-opt-text span { font-size: 13px; color: rgba(255,252,250,.5); line-height: 1.5; }
+
+  /* ── MAIN CONTENT (hidden until level chosen) ── */
+  #mainContent { display: none; }
+  #mainContent.show { display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; background: var(--ink);
+    overflow: hidden; padding: 72px 40px 80px; text-align: center;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 20% 80%, rgba(192,67,90,.22) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 60% at 80% 20%, rgba(192,67,90,.14) 0%, transparent 60%);
+  }
+  .hero-inner { position: relative; max-width: 680px; margin: 0 auto; }
+  .hero-label {
+    display: inline-block; font-size: 10px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--rose-md); margin-bottom: 28px;
+    padding: 5px 14px; border: 1px solid rgba(192,67,90,.35); border-radius: 40px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 7vw, 62px);
+    line-height: 1.06; color: var(--white); margin-bottom: 12px;
+  }
+  .hero h1 em { font-style: italic; color: var(--rose-md); }
+  .hero-hook {
+    font-size: clamp(16px, 2.5vw, 20px); color: rgba(255,252,250,.65);
+    line-height: 1.6; max-width: 520px; margin: 0 auto 36px; font-weight: 300;
+  }
+  .hero-hook strong { color: var(--white); font-weight: 500; }
+  .hero-cta-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 16px 36px; background: var(--rose); color: var(--white);
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
+    transition: transform .18s, background .18s; letter-spacing: .02em;
+  }
+  .btn-primary:hover { background: #A8394F; transform: translateY(-2px); }
+  .hero-sub { font-size: 12px; color: rgba(255,252,250,.38); letter-spacing: .04em; }
+
+  /* ── MIDDLE SECTION ── */
+  .middle {
+    background: var(--sand); padding: 64px 40px;
+  }
+  .middle-inner { max-width: 660px; margin: 0 auto; text-align: center; }
+  .section-eyebrow {
+    font-size: 11px; letter-spacing: .15em; text-transform: uppercase;
+    color: var(--rose); font-weight: 500; margin-bottom: 16px; display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4.5vw, 40px);
+    line-height: 1.2; color: var(--ink); margin-bottom: 20px;
+  }
+  .section-title em { font-style: italic; color: var(--rose); }
+  .section-desc {
+    font-size: 16px; color: var(--ink-mid); line-height: 1.75;
+    max-width: 540px; margin: 0 auto 40px;
+  }
+  .section-desc strong { color: var(--ink); font-weight: 500; }
+
+  /* Cards grid (nivel 1: aspiracional / nivel 2: señales) */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px; text-align: left;
+  }
+  .m-card {
+    background: var(--white); border: 1px solid var(--sand-dk);
+    border-radius: 16px; padding: 20px 22px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .m-card-dot {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--rose); flex-shrink: 0; margin-top: 7px;
+  }
+  .m-card-dot.soft { background: var(--gold); }
+  .m-card-text { font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .m-card-text span { display: block; font-size: 12px; color: var(--ink-mid); margin-top: 3px; line-height: 1.5; }
+
+  /* ── QUIZ ── */
+  .quiz-section { padding: 72px 40px; max-width: 720px; margin: 0 auto; }
+  .quiz-wrap { display: flex; flex-direction: column; gap: 24px; }
+  .quiz-item {
+    border: 1px solid var(--sand-dk); border-radius: 18px;
+    overflow: hidden; background: var(--white); transition: border-color .2s;
+  }
+  .quiz-item.answered { border-color: var(--rose-md); }
+  .quiz-q {
+    padding: 20px 24px 18px; font-size: 15px; font-weight: 500;
+    color: var(--ink); line-height: 1.5;
+  }
+  .quiz-q .num {
+    font-size: 11px; color: var(--rose); letter-spacing: .1em;
+    text-transform: uppercase; display: block; margin-bottom: 6px; font-weight: 400;
+  }
+  .quiz-opts { display: flex; flex-direction: column; border-top: 1px solid var(--sand-dk); }
+  .quiz-opt {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 24px; cursor: pointer; font-size: 14px; color: var(--ink-mid);
+    border-bottom: 1px solid var(--sand-dk);
+    transition: background .15s, color .15s; user-select: none;
+  }
+  .quiz-opt:last-child { border-bottom: none; }
+  .quiz-opt:hover { background: var(--sand); color: var(--ink); }
+  .quiz-opt.selected { background: var(--rose-lt); color: var(--rose); font-weight: 500; }
+  .quiz-opt .radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid currentColor; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: background .15s;
+  }
+  .quiz-opt.selected .radio { background: var(--rose); border-color: var(--rose); }
+  .quiz-opt.selected .radio::after {
+    content: ''; width: 7px; height: 7px; background: white; border-radius: 50%;
+  }
+  .quiz-result {
+    display: none; background: var(--rose-lt);
+    border: 1px solid var(--rose-md); border-radius: 18px;
+    padding: 32px 28px; text-align: center; margin-top: 8px;
+    animation: fadeUp .35s ease;
+  }
+  .quiz-result.show { display: block; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .result-emoji { font-size: 36px; margin-bottom: 14px; display: block; }
+  .result-title {
+    font-family: 'Playfair Display', serif; font-size: 22px;
+    color: var(--rose); margin-bottom: 10px; line-height: 1.3;
+  }
+  .result-body { font-size: 14px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 22px; }
+  .result-body strong { color: var(--ink); font-weight: 500; }
+
+  /* ── TOOL SECTION ── */
+  .tool-section { padding: 72px 40px; background: var(--sand); }
+  .tool-inner { max-width: 680px; margin: 0 auto; }
+  .name-row {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--white); border: 1px solid var(--sand-dk);
+    border-radius: 14px; padding: 16px 22px; margin-bottom: 28px;
+  }
+  .name-row label { font-size: 13px; color: var(--ink-mid); white-space: nowrap; }
+  .name-row input {
+    border: none; background: transparent;
+    font-family: 'Playfair Display', serif; font-size: 18px;
+    color: var(--ink); outline: none; width: 100%; font-style: italic;
+  }
+  .name-row input::placeholder { color: var(--ink-lt); }
+  .dimensions { display: flex; flex-direction: column; gap: 20px; }
+  .dim-card {
+    background: var(--white); border: 1px solid var(--sand-dk);
+    border-radius: 18px; overflow: hidden;
+  }
+  .dim-header { display: flex; align-items: center; gap: 14px; padding: 20px 24px; }
+  .dim-badge {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0; font-weight: 600;
+  }
+  .dim-badge.rose  { background: var(--rose-lt); color: var(--rose); }
+  .dim-badge.gold  { background: var(--gold-lt); color: var(--gold); }
+  .dim-badge.green { background: #EAF3DE; color: #3B6D11; }
+  .dim-info { flex: 1; }
+  .dim-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .dim-subtitle { font-size: 12px; color: var(--ink-mid); margin-top: 2px; }
+  .dim-body { border-top: 1px solid var(--sand-dk); padding: 20px 24px; }
+  .dim-hint { font-size: 12px; color: var(--ink-lt); margin-bottom: 10px; font-style: italic; }
+  textarea.dim-input {
+    width: 100%; border: 1px solid var(--sand-dk); border-radius: 10px;
+    padding: 12px 14px; font-size: 13px; font-family: 'Outfit', sans-serif;
+    color: var(--ink); background: var(--sand); resize: vertical;
+    min-height: 80px; outline: none; transition: border-color .2s; line-height: 1.6;
+  }
+  textarea.dim-input:focus { border-color: var(--rose-md); }
+
+  /* ── OFFER DARK ── */
+  .offer {
+    background: var(--ink); padding: 72px 40px;
+    position: relative; overflow: hidden;
+  }
+  .offer::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 55% 60% at 90% 100%, rgba(192,67,90,.18) 0%, transparent 60%);
+  }
+  .offer-inner { max-width: 680px; margin: 0 auto; position: relative; }
+  .offer .section-eyebrow { color: var(--rose-md); }
+  .offer .section-title { color: var(--white); margin-bottom: 14px; }
+  .offer .section-desc { color: rgba(255,252,250,.55); margin-bottom: 44px; max-width: 520px; }
+  .offer-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px; margin-bottom: 44px;
+  }
+  .offer-card {
+    background: rgba(255,252,250,.06); border: 1px solid rgba(255,252,250,.12);
+    border-radius: 18px; padding: 24px 22px;
+  }
+  .offer-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(192,67,90,.25);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 14px; font-size: 16px;
+  }
+  .offer-card-title { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 6px; }
+  .offer-card-desc { font-size: 13px; color: rgba(255,252,250,.5); line-height: 1.6; }
+  .offer-cta { text-align: center; }
+  .btn-cta-big {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 18px 44px; background: var(--rose); color: var(--white);
+    font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 600;
+    border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
+    transition: transform .18s, background .18s; letter-spacing: .02em;
+  }
+  .btn-cta-big:hover { background: #A8394F; transform: translateY(-2px); }
+  .offer-note { font-size: 12px; color: rgba(255,252,250,.3); margin-top: 14px; letter-spacing: .03em; }
+
+  /* ── FOOTER ── */
+  .foot-actions-wrap {
+    background: var(--white); border-top: 1px solid var(--sand-dk); padding-bottom: 80px;
+  }
+  .foot-actions {
+    max-width: 680px; margin: 0 auto; padding: 36px 40px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .foot-brand { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--ink); }
+  .foot-brand span {
+    font-size: 11px; color: var(--ink-lt); display: block; margin-top: 2px;
+    letter-spacing: .04em; font-family: 'Outfit', sans-serif;
+  }
+  .foot-right { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px; border: 1px solid var(--sand-dk); border-radius: 40px;
+    font-size: 13px; font-family: 'Outfit', sans-serif; cursor: pointer;
+    background: var(--white); color: var(--ink-mid); transition: all .18s;
+  }
+  .btn-ghost:hover { color: var(--ink); border-color: #ccc; }
+
+  /* ── STICKY BAR ── */
+  .sticky-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--ink); border-top: 1px solid rgba(255,255,255,.08);
+    padding: 14px 24px; display: flex; align-items: center;
+    justify-content: space-between; gap: 14px; z-index: 100;
+    transform: translateY(100%); transition: transform .35s cubic-bezier(.22,1,.36,1);
+  }
+  .sticky-bar.visible { transform: translateY(0); }
+  .sticky-text { font-size: 13px; color: rgba(255,252,250,.65); }
+  .sticky-text strong { color: var(--white); font-weight: 500; }
+  .btn-sticky {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 22px; background: var(--rose); color: var(--white);
+    font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+    border: none; border-radius: 40px; cursor: pointer; white-space: nowrap;
+    text-decoration: none; transition: background .18s; flex-shrink: 0;
+  }
+  .btn-sticky:hover { background: #A8394F; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(28,25,23,.72); z-index: 200;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeIn .2s ease; }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+  .modal {
+    background: var(--white); border-radius: 24px; padding: 40px 36px;
+    max-width: 440px; width: 100%; text-align: center; position: relative;
+    animation: popUp .3s cubic-bezier(.22,1,.36,1);
+  }
+  @keyframes popUp { from { opacity:0; transform:scale(.93) translateY(12px); } to { opacity:1; transform:scale(1) translateY(0); } }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none; font-size: 22px; color: var(--ink-lt); cursor: pointer;
+  }
+  .modal-icon { font-size: 42px; margin-bottom: 16px; display: block; }
+  .modal h3 {
+    font-family: 'Playfair Display', serif; font-size: 26px;
+    color: var(--ink); margin-bottom: 10px; line-height: 1.2;
+  }
+  .modal h3 em { font-style: italic; color: var(--rose); }
+  .modal p { font-size: 15px; color: var(--ink-mid); line-height: 1.7; margin-bottom: 28px; }
+  .modal p strong { color: var(--ink); font-weight: 500; }
+  .btn-skool {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 16px 24px; background: var(--rose); color: var(--white);
+    font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 600;
+    border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
+    transition: background .18s, transform .15s; margin-bottom: 12px;
+  }
+  .btn-skool:hover { background: #A8394F; transform: translateY(-2px); }
+  .modal-note { font-size: 12px; color: var(--ink-lt); }
+
+  @media (max-width: 600px) {
+    .hero, .middle, .quiz-section, .offer, .tool-section { padding-left: 20px; padding-right: 20px; }
+    .foot-actions { padding-left: 20px; padding-right: 20px; }
+    .gate-options { padding: 0 4px; }
+    .modal { padding: 32px 24px; }
+    .sticky-text { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ GATE ══ -->
+<div class="gate" id="gate">
+  <div class="gate-inner">
+    <span class="gate-label">Relation Line™ &nbsp;·&nbsp; Herramienta gratuita</span>
+    <h1>Tu relación,<br>vista con <em>claridad</em></h1>
+    <p class="gate-sub">
+      Antes de empezar, una pregunta rápida.<br>
+      Tu respuesta personaliza todo lo que sigue.
+    </p>
+    <p class="gate-question">¿Cómo describirías lo que sientes hoy?</p>
+    <div class="gate-options">
+      <div class="gate-opt" onclick="elegirNivel(1)">
+        <span class="gate-opt-icon">🌸</span>
+        <div class="gate-opt-text">
+          <strong>Todo está bien, más o menos</strong>
+          <span>No me quejo. Aunque a veces siento que algo podría ser mejor.</span>
+        </div>
+      </div>
+      <div class="gate-opt" onclick="elegirNivel(2)">
+        <span class="gate-opt-icon">🌀</span>
+        <div class="gate-opt-text">
+          <strong>Algo no cuadra, pero no sé qué</strong>
+          <span>Tengo esa sensación de que algo está mal, aunque no puedo nombrarlo.</span>
+        </div>
+      </div>
+      <div class="gate-opt" onclick="elegirNivel(2)">
+        <span class="gate-opt-icon">🔥</span>
+        <div class="gate-opt-text">
+          <strong>Sé que algo está mal</strong>
+          <span>Lo siento hace tiempo. Solo necesito claridad y saber qué hacer.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN CONTENT ══ -->
+<div id="mainContent">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <span class="hero-label">Relation Line™ &nbsp;·&nbsp; Herramienta gratuita</span>
+      <h1 id="heroTitle">Tu relación,<br>vista con <em>claridad</em></h1>
+      <p class="hero-hook" id="heroHook">Cargando...</p>
+      <div class="hero-cta-wrap">
+        <a href="#quiz" class="btn-primary">
+          <span id="heroCta">Empezar</span>
+          <span>↓</span>
+        </a>
+        <span class="hero-sub" id="heroSub">Gratis · 3 minutos · Un espacio solo para ti</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MIDDLE SECTION -->
+  <section class="middle">
+    <div class="middle-inner">
+      <span class="section-eyebrow" id="middleEyebrow">Reconócete</span>
+      <h2 class="section-title" id="middleTitle">Título</h2>
+      <p class="section-desc" id="middleDesc">Descripción</p>
+      <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section class="quiz-section" id="quiz">
+    <span class="section-eyebrow">Mini diagnóstico</span>
+    <h2 class="section-title" id="quizTitle">Título quiz</h2>
+    <p class="section-desc" id="quizDesc" style="margin-bottom:36px">Desc quiz</p>
+    <div class="quiz-wrap" id="quizWrap"></div>
+    <div class="quiz-result" id="quizResult">
+      <span class="result-emoji" id="resultEmoji">🌿</span>
+      <p class="result-title" id="resultTitle"></p>
+      <p class="result-body" id="resultBody"></p>
+      <button class="btn-primary" onclick="openModal()" id="resultCta">
+        Quiero explorar esto →
+      </button>
+    </div>
+  </section>
+
+  <!-- TOOL -->
+  <section class="tool-section" id="herramienta">
+    <div class="tool-inner">
+      <span class="section-eyebrow">Tu espacio personal</span>
+      <h2 class="section-title" id="toolTitle">Título herramienta</h2>
+      <p class="section-desc" id="toolDesc" style="margin-bottom:32px">Desc herramienta</p>
+      <div class="name-row">
+        <label for="nombre">Este espacio es de</label>
+        <input id="nombre" type="text" placeholder="escribe tu nombre" autocomplete="off">
+      </div>
+      <div class="dimensions" id="dimensionsWrap"></div>
+    </div>
+  </section>
+
+  <!-- OFFER DARK -->
+  <section class="offer">
+    <div class="offer-inner">
+      <span class="section-eyebrow">Siguiente paso</span>
+      <h2 class="section-title" id="offerTitle">Título oferta</h2>
+      <p class="section-desc" id="offerDesc">Desc oferta</p>
+      <div class="offer-grid">
+        <div class="offer-card">
+          <div class="offer-icon">🔍</div>
+          <div class="offer-card-title">Sesiones en vivo</div>
+          <div class="offer-card-desc">Espacio seguro para ir más profundo, con acompañamiento real.</div>
+        </div>
+        <div class="offer-card">
+          <div class="offer-icon">🤝</div>
+          <div class="offer-card-title">Comunidad de mujeres</div>
+          <div class="offer-card-desc">Mujeres que entienden sin que tengas que explicar todo desde cero.</div>
+        </div>
+        <div class="offer-card">
+          <div class="offer-icon">🗺️</div>
+          <div class="offer-card-title">Herramientas guiadas</div>
+          <div class="offer-card-desc">Metodología paso a paso para pasar del reconocimiento a la acción.</div>
+        </div>
+      </div>
+      <div class="offer-cta">
+        <button class="btn-cta-big" onclick="openModal()" id="offerCta">
+          Quiero acompañamiento →
+        </button>
+        <p class="offer-note">Comunidad gratuita · Un espacio solo para ti</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div class="foot-actions-wrap">
+    <div class="foot-actions">
+      <div>
+        <div class="foot-brand">Relation Line™</div>
+        <div class="foot-brand"><span>Herramienta de trabajo personal</span></div>
+      </div>
+      <div class="foot-right">
+        <button class="btn-ghost" onclick="guardarPDF()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Guardar como PDF
+        </button>
+        <button class="btn-primary" onclick="openModal()" style="font-size:13px;padding:10px 20px" id="footerCta">
+          Quiero acompañamiento →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STICKY -->
+  <div class="sticky-bar" id="stickyBar">
+    <p class="sticky-text" id="stickyText"><strong>¿Lista para el siguiente paso?</strong></p>
+    <button class="btn-sticky" onclick="openModal()" id="stickyCta">Quiero acompañamiento →</button>
+  </div>
+
+</div><!-- /mainContent -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <span class="modal-icon" id="modalIcon">🌹</span>
+    <h3 id="modalTitle">Título modal</h3>
+    <p id="modalBody">Cuerpo modal</p>
+    <a href="https://www.skool.com/" target="_blank" class="btn-skool" id="modalCta">
+      Unirme a la comunidad →
+    </a>
+    <p class="modal-note">Gratuita · Un espacio solo para ti</p>
+  </div>
+</div>
+
+<script>
+const SKOOL_URL = 'https://www.skool.com/'; // ← reemplaza con tu URL de Skool
+
+// ═══════════════════════════════════════════
+// CONTENIDO POR NIVEL
+// ═══════════════════════════════════════════
+const CONTENT = {
+  1: {
+    hero: {
+      title: '¿Cómo sería tu relación<br>si realmente te sintieras <em>libre?</em>',
+      hook: 'No hay nada roto. Solo hay preguntas que nadie se atreve a hacer.<br><strong>Este espacio es para hacerlas.</strong>',
+      cta: 'Descúbrelo en 3 minutos',
+      sub: 'Gratis · 3 minutos · Un espacio solo para ti'
+    },
+    middle: {
+      eyebrow: 'Imagina esto',
+      title: '¿Cómo se vería una relación<br>donde realmente <em>floreces?</em>',
+      desc: 'No para comparar. Solo para notar. A veces la distancia entre lo que tenemos y lo que merecemos se vuelve visible cuando le ponemos nombre al ideal.',
+      cards: [
+        { text: 'Te expresas sin calcular cada palabra', sub: '¿Cuándo fue la última vez que hablaste con total libertad?', soft: true },
+        { text: 'Tus necesidades importan igual que las de él', sub: '¿Sientes que das y recibes en igual medida?', soft: true },
+        { text: 'Los desacuerdos no te dejan agotada', sub: '¿Resolver algo con él suma o resta energía?', soft: true },
+        { text: 'Tu manera de ser es bienvenida, no tolerada', sub: '¿Te sientes aceptada o simplemente permitida?', soft: true },
+        { text: 'El futuro se siente seguro, no incierto', sub: '¿Hay estabilidad real o solo esperanza de que mejore?', soft: true },
+        { text: 'Estar con él te expande, no te encoge', sub: '¿Eres más tú misma o menos desde que están juntas?', soft: true },
+      ]
+    },
+    quiz: {
+      title: 'Tres preguntas para<br>mirar con más <em>claridad</em>',
+      desc: 'Sin presión. Sin diagnóstico. Solo un espejo.',
+      questions: [
+        {
+          q: '¿Cómo describes tu relación cuando alguien te pregunta?',
+          opts: [
+            { val: 'a', text: 'Bien. No tengo de qué quejarme.' },
+            { val: 'b', text: 'Tiene sus cosas, como todo.' },
+            { val: 'c', text: 'A veces bien, a veces no tanto.' },
+            { val: 'd', text: 'Honestamente, complicada.' },
+          ]
+        },
+        {
+          q: '¿Con qué frecuencia piensas "ojalá fuera diferente"?',
+          opts: [
+            { val: 'a', text: 'Casi nunca. Estoy bastante a gusto.' },
+            { val: 'b', text: 'Alguna vez. Pero lo normalizo.' },
+            { val: 'c', text: 'Seguido. Sobre cosas pequeñas.' },
+            { val: 'd', text: 'Constantemente. Sobre cosas grandes.' },
+          ]
+        },
+        {
+          q: '¿Qué pasa cuando piensas en cómo quieres ser amada?',
+          opts: [
+            { val: 'a', text: 'Me siento bien. Más o menos recibo eso.' },
+            { val: 'b', text: 'Hay cosas que me gustaría que fueran distintas.' },
+            { val: 'c', text: 'Lo que imagino es muy diferente a lo que tengo.' },
+            { val: 'd', text: 'Ni me permito imaginarlo. Da tristeza.' },
+          ]
+        },
+      ],
+      results: {
+        positive: {
+          emoji: '🌿',
+          title: 'Tu relación tiene una base. Y siempre hay espacio para más.',
+          body: 'No hay nada urgente, pero sí hay algo valioso aquí: la pregunta de cómo ser <strong>más tú misma</strong> dentro de la relación. El acompañamiento no es solo para cuando algo está mal. También es para quien quiere más profundidad, más presencia, más de lo bueno.'
+        },
+        neutral: {
+          emoji: '💛',
+          title: 'Hay cosas que has normalizado sin darte cuenta.',
+          body: 'No duele mucho, por eso no lo nombras. Pero cada vez que piensas "así son las relaciones" o "tampoco es para tanto"… <strong>algo en ti sabe que merece más.</strong> Ese algo tiene razón.'
+        },
+        alert: {
+          emoji: '🌹',
+          title: 'Lo que sientes ya tiene nombre. Merece atención.',
+          body: 'Has estado cargando algo sola durante un tiempo. No porque seas dramática — sino porque nunca has tenido un espacio donde mirarlo con claridad. <strong>Ese espacio existe.</strong> Y empieza aquí.'
+        }
+      },
+      resultCta: 'Quiero explorar esto →'
+    },
+    tool: {
+      title: 'Escríbelo. Lo que<br>no se nombra, no <em>cambia.</em>',
+      desc: 'Tres preguntas de construcción, no de queja. Tuyas. En privado.',
+      dims: [
+        { badge: 'rose', icon: '✨', title: 'Cómo quiero sentirme', subtitle: 'Tu ideal, sin filtros de "pedir demasiado"', hint: '¿Cómo te gustaría sentirte cuando estás con él?', placeholder: 'Ej: Tranquila. Segura. Como que puedo ser yo sin que nada explote. Como que mi presencia suma en vez de molestar...', id: 't1' },
+        { badge: 'gold', icon: '💛', title: 'Lo que me da energía vs. lo que me la quita', subtitle: 'Un inventario honesto de tu relación', hint: '¿Qué momentos con él te llenan y cuáles te dejan vacía?', placeholder: 'Ej: Me llena cuando hacemos planes juntos y los cumple. Me quita energía cuando tengo que recordarle las cosas importantes para mí...', id: 't2' },
+        { badge: 'green', icon: '🌱', title: 'Qué me gustaría pedirle', subtitle: 'Una sola cosa. Concreta. Sin rodeos.', hint: '¿Qué cambio pequeño haría una diferencia grande para ti?', placeholder: 'Ej: Que cuando llegue a casa me pregunte cómo estoy de verdad, no de paso. Que recuerde lo que le conté la semana pasada...', id: 't3' },
+      ]
+    },
+    offer: {
+      title: 'Hay preguntas que se<br>responden mejor <em>acompañada.</em>',
+      desc: 'No porque no puedas sola. Sino porque ciertas cosas se ven más claras cuando tienes un espejo, una guía y mujeres que entienden.',
+      cta: 'Quiero explorar esto →'
+    },
+    modal: {
+      icon: '🌸',
+      title: 'El primer paso ya <em>lo diste.</em>',
+      body: 'Hacerte estas preguntas no es poca cosa. Ahora viene el espacio donde seguirlas.<br><br>En la comunidad de Relation Line vas a encontrar <strong>herramientas, sesiones en vivo y mujeres en el mismo camino</strong> que tú.',
+      cta: 'Unirme a la comunidad →'
+    },
+    sticky: {
+      text: '¿Lista para mirar con más claridad?',
+      cta: 'Quiero explorar esto →'
+    },
+    pdfDims: [
+      { tag: 't-rose', tagLabel: 'Cómo quiero sentirme', title: 'Cómo quiero sentirme', hint: '¿Cómo te gustaría sentirte cuando estás con él?', id: 't1' },
+      { tag: 't-gold', tagLabel: 'Energía', title: 'Lo que me da energía vs. lo que me la quita', hint: 'Un inventario honesto de tu relación', id: 't2' },
+      { tag: 't-green', tagLabel: 'Lo que quiero pedirle', title: 'Qué me gustaría pedirle', hint: 'Una sola cosa. Concreta. Sin rodeos.', id: 't3' },
+    ]
+  },
+
+  2: {
+    hero: {
+      title: '¿Esto que<br>sientes tiene<br><em>nombre?</em>',
+      hook: 'Algo no cuadra. No puedes explicarlo.<br><strong>Pero tu cuerpo ya lo sabe.</strong>',
+      cta: 'Descúbrelo en 3 minutos',
+      sub: 'Gratis · Sin registro · Un espacio solo para ti'
+    },
+    middle: {
+      eyebrow: 'Reconócete aquí',
+      title: '¿Cuántas de estas frases<br><em>te las has dicho a ti misma?</em>',
+      desc: 'No es que todo esté mal. <strong>Es que algo no termina de estar bien.</strong> Y lo peor es que no sabes si el problema eres tú, si estás exagerando, o si simplemente así son las relaciones.',
+      cards: [
+        { text: '"Tal vez soy demasiado sensible"', sub: 'Lo has pensado después de que algo te dolió de verdad.' },
+        { text: '"No quiero hacer un drama"', sub: 'Así que te lo guardas. Otra vez.' },
+        { text: '"Seguro que tiene sus razones"', sub: 'Y terminas justificando lo que te hizo daño.' },
+        { text: '"¿Acaso pido demasiado?"', sub: 'No. Pero llevas tiempo creyendo que sí.' },
+        { text: '"Con tiempo mejora"', sub: 'Llevas meses — o años — esperando ese tiempo.' },
+        { text: '"Lo quiero, pero me siento sola"', sub: 'Las dos cosas pueden ser ciertas. Y eso duele doble.' },
+      ]
+    },
+    quiz: {
+      title: 'Tres preguntas que nadie<br>te ha hecho todavía',
+      desc: 'No hay respuestas correctas. Solo las tuyas. Eso ya es suficiente para empezar.',
+      questions: [
+        {
+          q: 'Cuando algo te molesta en la relación, ¿qué haces primero?',
+          opts: [
+            { val: 'a', text: 'Me lo guardo. No vale la pena el conflicto.' },
+            { val: 'b', text: 'Lo digo, pero siento que no me escuchan.' },
+            { val: 'c', text: 'Me pregunto si tengo razón antes de decirlo.' },
+            { val: 'd', text: 'Lo hablo y llegamos a algo.' },
+          ]
+        },
+        {
+          q: '¿Cuándo fue la última vez que te sentiste completamente tranquila en tu relación?',
+          opts: [
+            { val: 'a', text: 'No lo recuerdo. Siempre hay algo.' },
+            { val: 'b', text: 'Cuando estamos bien, está muy bien. Pero…' },
+            { val: 'c', text: 'Tengo paz, pero a veces siento que algo falta.' },
+            { val: 'd', text: 'Generalmente estoy tranquila.' },
+          ]
+        },
+        {
+          q: '¿Qué pasa cuando pides algo que necesitas?',
+          opts: [
+            { val: 'a', text: 'Casi no pido. Me da miedo parecer exigente.' },
+            { val: 'b', text: 'Pido, pero muchas veces no pasa nada.' },
+            { val: 'c', text: 'A veces sí, a veces no. Es inconsistente.' },
+            { val: 'd', text: 'Generalmente me responden bien.' },
+          ]
+        },
+      ],
+      results: {
+        positive: {
+          emoji: '🌿',
+          title: 'Tu relación tiene una base. Y también tiene trabajo por hacer.',
+          body: 'No todo está roto, pero sientes que algo podría ser <strong>más profundo, más presente, más tuyo.</strong> Eso no es exigir demasiado. Es saber lo que mereces.'
+        },
+        neutral: {
+          emoji: '💛',
+          title: 'Hablas, pero sientes que nadie realmente te escucha.',
+          body: 'Lo intentas. Pero cada vez que lo dices y no pasa nada, una parte tuya se pregunta si vale la pena seguir intentándolo. <strong>Sí vale.</strong> Pero necesitas herramientas distintas, no más esfuerzo del mismo tipo.'
+        },
+        alert: {
+          emoji: '🌹',
+          title: 'Llevas mucho tiempo silenciándote a ti misma.',
+          body: 'Has aprendido que callarte era más seguro que pedir. Pero ese silencio tiene un costo — y lo estás pagando tú. <strong>No estás exagerando. No eres demasiado.</strong> Solo necesitas un espacio donde eso sea verdad.'
+        }
+      },
+      resultCta: 'Quiero acompañamiento →'
+    },
+    tool: {
+      title: 'Ponle nombre<br>a lo que <em>sientes</em>',
+      desc: 'Tres preguntas. Tus palabras. Nadie más las verá. Pero tú sí vas a verlas escritas — y eso lo cambia todo.',
+      dims: [
+        { badge: 'rose', icon: '🚦', title: 'Lo que ya no estás dispuesta a tolerar', subtitle: 'Tus no-negociables, aunque aún no los hayas nombrado así', hint: '¿Qué situación sigues recordando aunque quisiste olvidarla?', placeholder: 'Ej: Cuando siento que mi reacción siempre es «demasiado» para él. Cuando pasan días y actúa como si nada hubiera pasado...', id: 't1' },
+        { badge: 'gold', icon: '💛', title: 'Lo que sí mereces recibir', subtitle: 'No lo que crees que puedes pedir. Lo que mereces de verdad', hint: '¿Cómo se vería una relación donde realmente te sintieras segura?', placeholder: 'Ej: Que cuando esté mal, pregunte qué me pasa en vez de alejarse. Que mis palabras no tengan que ser perfectas para que me escuche...', id: 't2' },
+        { badge: 'green', icon: '✨', title: 'Cómo quieres ser amada', subtitle: 'No en abstracto. En acciones concretas y cotidianas', hint: '¿Qué pequeña acción de parte de él te haría sentir realmente vista?', placeholder: 'Ej: Que recuerde lo que le conté la semana pasada. Que cuando lleguemos a casa me pregunte cómo me fue de verdad...', id: 't3' },
+      ]
+    },
+    offer: {
+      title: 'Ya nombraste<br>lo que <em>sientes.</em>',
+      desc: 'Ahora viene la parte que no puedes hacer sola: entender por qué lo has permitido, y cómo cambiarlo.',
+      cta: 'Quiero acompañamiento →'
+    },
+    modal: {
+      icon: '🌹',
+      title: 'El primer paso ya <em>está dado.</em>',
+      body: 'Nombrarlo fue valioso. Ahora viene el acompañamiento.<br><br>En la comunidad gratuita de Relation Line vas a encontrar <strong>herramientas, sesiones en vivo y mujeres que entienden</strong> exactamente lo que estás viviendo.',
+      cta: 'Unirme a la comunidad →'
+    },
+    sticky: {
+      text: '¿Lista para el siguiente paso?',
+      cta: 'Quiero acompañamiento →'
+    },
+    pdfDims: [
+      { tag: 't-rose', tagLabel: 'Lo que ya no tolero', title: 'Lo que ya no estoy dispuesta a tolerar', hint: '¿Qué situación sigues recordando aunque quisiste olvidarla?', id: 't1' },
+      { tag: 't-gold', tagLabel: 'Lo que merezco', title: 'Lo que sí merezco recibir', hint: '¿Cómo se vería una relación donde realmente te sintieras segura?', id: 't2' },
+      { tag: 't-green', tagLabel: 'Cómo quiero ser amada', title: 'Cómo quiero ser amada', hint: '¿Qué pequeña acción te haría sentir realmente vista?', id: 't3' },
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════════
+let nivel = null;
+let answers = {};
+let pdfDims = [];
+
+// ═══════════════════════════════════════════
+// ELEGIR NIVEL
+// ═══════════════════════════════════════════
+function elegirNivel(n) {
+  nivel = n;
+  const c = CONTENT[n];
+  localStorage.setItem('rl_nivel', n);
+
+  // Hero
+  document.getElementById('heroTitle').innerHTML = c.hero.title;
+  document.getElementById('heroHook').innerHTML = c.hero.hook;
+  document.getElementById('heroCta').textContent = c.hero.cta;
+  document.getElementById('heroSub').textContent = c.hero.sub;
+
+  // Middle
+  document.getElementById('middleEyebrow').textContent = c.middle.eyebrow;
+  document.getElementById('middleTitle').innerHTML = c.middle.title;
+  document.getElementById('middleDesc').innerHTML = c.middle.desc;
+  const grid = document.getElementById('cardsGrid');
+  grid.innerHTML = c.middle.cards.map(card => `
+    <div class="m-card">
+      <div class="m-card-dot${card.soft ? ' soft' : ''}"></div>
+      <div class="m-card-text">${card.text}<span>${card.sub}</span></div>
+    </div>
+  `).join('');
+
+  // Quiz
+  document.getElementById('quizTitle').innerHTML = c.quiz.title;
+  document.getElementById('quizDesc').textContent = c.quiz.desc;
+  document.getElementById('resultCta').textContent = c.quiz.resultCta;
+  const wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = c.quiz.questions.map((q, i) => `
+    <div class="quiz-item" data-q="${i}">
+      <div class="quiz-q">
+        <span class="num">Pregunta 0${i+1}</span>${q.q}
+      </div>
+      <div class="quiz-opts">
+        ${q.opts.map(o => `
+          <div class="quiz-opt" data-val="${o.val}" onclick="selectOpt(this)">
+            <div class="radio"></div>${o.text}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+
+  // Tool
+  document.getElementById('toolTitle').innerHTML = c.tool.title;
+  document.getElementById('toolDesc').textContent = c.tool.desc;
+  const dimsWrap = document.getElementById('dimensionsWrap');
+  dimsWrap.innerHTML = c.tool.dims.map(d => `
+    <div class="dim-card">
+      <div class="dim-header">
+        <div class="dim-badge ${d.badge}">${d.icon}</div>
+        <div class="dim-info">
+          <div class="dim-title">${d.title}</div>
+          <div class="dim-subtitle">${d.subtitle}</div>
+        </div>
+      </div>
+      <div class="dim-body">
+        <p class="dim-hint">${d.hint}</p>
+        <textarea class="dim-input" id="${d.id}" placeholder="${d.placeholder}"></textarea>
+      </div>
+    </div>
+  `).join('');
+
+  // Offer
+  document.getElementById('offerTitle').innerHTML = c.offer.title;
+  document.getElementById('offerDesc').textContent = c.offer.desc;
+  document.getElementById('offerCta').textContent = c.offer.cta;
+  document.getElementById('footerCta').textContent = c.offer.cta;
+
+  // Sticky
+  document.getElementById('stickyText').innerHTML = `<strong>${c.sticky.text}</strong>`;
+  document.getElementById('stickyCta').textContent = c.sticky.cta;
+
+  // Modal
+  document.getElementById('modalIcon').textContent = c.modal.icon;
+  document.getElementById('modalTitle').innerHTML = c.modal.title;
+  document.getElementById('modalBody').innerHTML = c.modal.body;
+  document.getElementById('modalCta').textContent = c.modal.cta;
+  document.getElementById('modalCta').href = SKOOL_URL;
+
+  // PDF dims ref
+  pdfDims = c.pdfDims;
+
+  // Mostrar contenido, ocultar gate
+  document.getElementById('gate').style.display = 'none';
+  const main = document.getElementById('mainContent');
+  main.classList.add('show');
+
+  // Cargar localStorage
+  cargarLocalStorage();
+
+  // Re-bind autosave (textareas recién creadas)
+  document.addEventListener('input', e => {
+    if (e.target.matches('textarea,input')) guardarLocalStorage();
+  });
+}
+
+// ═══════════════════════════════════════════
+// QUIZ
+// ═══════════════════════════════════════════
+function selectOpt(el) {
+  const item = el.closest('.quiz-item');
+  item.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  item.classList.add('answered');
+  answers[item.dataset.q] = el.dataset.val;
+  if (Object.keys(answers).length === 3) mostrarResultado();
+}
+
+function mostrarResultado() {
+  const c = CONTENT[nivel];
+  const vals = Object.values(answers);
+  const aCount = vals.filter(v => v === 'a').length;
+  const dCount = vals.filter(v => v === 'd').length;
+
+  let r;
+  if (nivel === 1) {
+    if (dCount >= 2 || (vals[0] === 'd' && vals[2] === 'd')) r = c.quiz.results.alert;
+    else if (aCount >= 2) r = c.quiz.results.positive;
+    else r = c.quiz.results.neutral;
+  } else {
+    if (aCount >= 2) r = c.quiz.results.alert;
+    else if (dCount >= 2) r = c.quiz.results.positive;
+    else r = c.quiz.results.neutral;
+  }
+
+  document.getElementById('resultEmoji').textContent = r.emoji;
+  document.getElementById('resultTitle').textContent = r.title;
+  document.getElementById('resultBody').innerHTML = r.body;
+  const result = document.getElementById('quizResult');
+  result.classList.add('show');
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+// ═══════════════════════════════════════════
+// STICKY
+// ═══════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  const bar = document.getElementById('stickyBar');
+  if (window.scrollY > 500) bar.classList.add('visible');
+  else bar.classList.remove('visible');
+});
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+function guardarLocalStorage() {
+  ['nombre','t1','t2','t3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) localStorage.setItem('rl_' + id, el.value);
+  });
+}
+function cargarLocalStorage() {
+  ['nombre','t1','t2','t3'].forEach(id => {
+    const el = document.getElementById(id);
+    const v = localStorage.getItem('rl_' + id);
+    if (el && v) el.value = v;
+  });
+}
+
+// ═══════════════════════════════════════════
+// PDF
+// ═══════════════════════════════════════════
+function get(id) { return document.getElementById(id)?.value?.trim() || '—'; }
+
+function guardarPDF() {
+  const nombre = get('nombre') === '—' ? 'Mi espacio' : get('nombre');
+  const dims = pdfDims.map(d => `
+    <div class="section">
+      <span class="tag ${d.tag}">${d.tagLabel}</span>
+      <h2>${d.title}</h2>
+      <p class="hint">${d.hint}</p>
+      <div class="field">${get(d.id)}</div>
+    </div>
+    <hr class="divider">
+  `).join('');
+
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Outfit',sans-serif;color:#1C1917;padding:48px 56px;font-size:13px;line-height:1.7;background:white}
+    h1{font-family:'Playfair Display',serif;font-size:36px;margin-bottom:6px;line-height:1.1}
+    h1 em{font-style:italic;color:#C0435A}
+    .sub{color:#6B6460;font-size:12px;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid #E8E2D9}
+    .section{margin-bottom:28px;page-break-inside:avoid}
+    .tag{display:inline-block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+    .t-rose{background:#FCEEF1;color:#C0435A}
+    .t-gold{background:#FDF6E3;color:#B8860B}
+    .t-green{background:#EAF3DE;color:#3B6D11}
+    h2{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:10px;color:#1C1917}
+    .hint{font-size:11px;color:#B5AFAB;font-style:italic;margin-bottom:6px}
+    .field{background:#F7F3EE;border:1px solid #E8E2D9;border-radius:10px;padding:12px 14px;min-height:40px;white-space:pre-wrap;font-size:13px;word-break:break-word}
+    .divider{border:none;border-top:1px solid #E8E2D9;margin:24px 0}
+    .footer{margin-top:40px;font-size:11px;color:#B5AFAB;text-align:center;padding-top:14px;border-top:1px solid #E8E2D9}
+    @media print{@page{margin:0}body{padding:36px 48px;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+  </style></head><body>
+  <h1>Mi espacio de <em>claridad</em></h1>
+  <p class="sub">Relation Line™ &nbsp;·&nbsp; Un espacio personal de <strong>${nombre}</strong></p>
+  ${dims}
+  <p class="footer">Relation Line™ &nbsp;·&nbsp; Este documento es tuyo.</p>
+  <script>document.fonts.ready.then(()=>setTimeout(()=>window.print(),400))<\/script>
+  </body></html>`;
+
+  const w = window.open('', '_blank', 'width=820,height=900');
+  if (!w) { alert('Permite ventanas emergentes para guardar el PDF.'); return; }
+  w.document.write(html);
+  w.document.close();
+}
+</script>
+</body>
+</html>
